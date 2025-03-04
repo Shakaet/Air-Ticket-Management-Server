@@ -30,6 +30,7 @@ async function run() {
     const database = client.db("AirTicket");
     const userCollection = database.collection("users");
     const flightsDB = database.collection("flightsDB");
+    const bookedDB = database.collection("bookedDB");
     
 
 
@@ -47,6 +48,61 @@ async function run() {
 
     let result= await flightsDB.find().toArray()
     res.send(result)
+  })
+
+
+  app.get("/bookedData/:email",async(req,res)=>{
+
+    let email=req.params.email
+    let query={email}
+
+    let result= await bookedDB.find(query).toArray()
+    res.send(result)
+  })
+
+  app.delete("/bookedData/:id",async(req,res)=>{
+
+    let idx=req.params.id
+
+    let flightId = req.query.flight_id;
+
+    console.log(flightId)
+
+    let query={_id:new ObjectId(idx)}
+    let filter={_id:new ObjectId(flightId)}
+    const updateDoc = {
+      $set: {
+        status:"available"
+      },
+    };
+    await flightsDB.updateOne(filter, updateDoc);
+
+    const result = await bookedDB.deleteOne(query);
+    res.send(result)
+
+
+  })
+
+
+  app.post("/bookedData",async(req,res)=>{
+
+    let bookData=req.body
+    // console.log(bookData)
+
+    let idx=bookData.flight_id
+
+    let query={_id:new ObjectId(idx)}
+
+    const updateDoc = {
+      $set: {
+        status:"unavailable"
+      },
+    };
+    await flightsDB.updateOne(query, updateDoc);
+
+    const result = await bookedDB.insertOne(bookData);
+      res.send(result)
+
   })
 
     app.post("/users",async(req,res)=>{

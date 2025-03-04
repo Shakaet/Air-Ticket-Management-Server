@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://Air-Ticket:ir3UwPDlD2HSVpd1@cluster0.bnqcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,9 +29,25 @@ async function run() {
 
     const database = client.db("AirTicket");
     const userCollection = database.collection("users");
+    const flightsDB = database.collection("flightsDB");
     
 
 
+  app.get("/flightsDetails/:id",async(req,res)=>{
+
+    let idx=req.params.id
+
+    let query={_id:new ObjectId(idx)}
+
+        let result= await flightsDB.findOne(query)
+        res.send(result)
+   })
+
+  app.get("/allflights",async(req,res)=>{
+
+    let result= await flightsDB.find().toArray()
+    res.send(result)
+  })
 
     app.post("/users",async(req,res)=>{
 

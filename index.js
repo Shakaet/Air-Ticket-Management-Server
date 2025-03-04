@@ -31,6 +31,43 @@ async function run() {
     const userCollection = database.collection("users");
     const flightsDB = database.collection("flightsDB");
     const bookedDB = database.collection("bookedDB");
+
+    app.get("/users/admin/:email",async(req,res)=>{
+
+      let user_email=req.params.email
+
+     
+      let query={user_email}
+      let user= await userCollection.findOne(query)
+
+      let admin=false
+      if(user){
+        admin= user?.role === "admin"
+      }
+
+      res.send({ admin })
+
+
+    })
+
+    app.get("/users/user/:email",async(req,res)=>{
+
+      let user_email=req.params.email
+
+     
+      let query={user_email}
+      let users= await userCollection.findOne(query)
+
+      let user=false
+      if(users){
+        user= users?.role === "user"
+      }
+
+      res.send({ user })
+
+
+    })
+
     
 
 

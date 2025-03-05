@@ -87,6 +87,28 @@ async function run() {
     res.send(result)
   })
 
+  app.get("/bookedData",async(req,res)=>{
+
+    
+
+    let result= await bookedDB.find().toArray()
+    res.send(result)
+  })
+
+  app.patch("/bookings/:id",async(req,res)=>{
+
+    let idx=req.params.id
+    let query={_id:new ObjectId(idx)}
+    const updateDoc = {
+      $set: {
+        status:"approved"
+      },
+    };
+    let result= await bookedDB.updateOne(query, updateDoc);
+    res.send(result)
+
+  })
+
 
   app.get("/bookedData/:email",async(req,res)=>{
 
@@ -103,7 +125,7 @@ async function run() {
 
     let flightId = req.query.flight_id;
 
-    console.log(flightId)
+    // console.log(flightId)
 
     let query={_id:new ObjectId(idx)}
     let filter={_id:new ObjectId(flightId)}
@@ -142,11 +164,32 @@ async function run() {
 
   })
 
+
+  app.get("/users",async(req,res)=>{
+
+    let result=await userCollection.find().toArray()
+    res.send(result)
+  })
+
+  app.patch("/users/:id",async(req,res)=>{
+
+    let idx = req.params.id;
+    let query = { _id: new ObjectId(idx)};
+    let { role } = req.body;
+    const updateDoc = {
+      $set: {role} // Corrected structure
+  };
+
+  let result = await userCollection.updateOne(query, updateDoc);
+  res.send(result);
+      
+  })
+
     app.post("/users",async(req,res)=>{
 
         let userData=req.body
 
-        console.log(userData)
+        // console.log(userData)
 
         let user_email=userData.user_email
       let query= {user_email}
